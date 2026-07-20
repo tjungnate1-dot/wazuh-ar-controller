@@ -7,7 +7,7 @@ import (
 )
 
 // flushIP removes one IP
-
+//
 func flushIP(ip string, cfg *Config) (string, error) {
 	switch cfg.BlockMethod {
 	case "mock":
