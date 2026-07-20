@@ -1,0 +1,40 @@
+# Normal administrative switch.
+enabled: true
+
+# Where the program writes its logs.
+log_path: ./ar.log
+
+# CHANGE ON LINUX
+block_method: mock
+
+# FOR LINUX
+ipset:
+  set_name: wazuh-ar-blocklist
+
+# DELETE ON LINUX
+mock:
+  # The blocked IPs are stored here.
+  state_path: ./mock-blocked-ips.json
+
+# Trusted addresses that should never be blocked.
+whitelist:
+  - 127.0.0.1
+  - "::1"
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+
+fields:
+  command: command
+  source_ip: parameters.alert.data.srcip
+  rule_id: parameters.alert.rule.id
+
+required:
+  - command
+  - source_ip
+  - rule_id
+
+validate_ip:
+  - source_ip
+
+print_original: false
