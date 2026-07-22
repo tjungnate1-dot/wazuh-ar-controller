@@ -7,15 +7,13 @@ import (
 )
 
 // flushIP removes one IP
-//
+
 func flushIP(ip string, cfg *Config) (string, error) {
 	switch cfg.BlockMethod {
 	case "mock":
 		return flushIPMock(ip, cfg.Mock.StatePath)
-
 	case "ipset":
 		return flushIPSet(ip, cfg.IPSet.SetName)
-
 	default:
 		return "", fmt.Errorf(
 			"unsupported block method %q",

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "origin": {
+    "name": "wazuh-manager",
+    "module": "wazuh-execd"
+  },
+  "command": "add",
+  "parameters": {
+    "extra_args": [],
+    "alert": {
+      "timestamp": "2026-07-16T09:30:45.123+0800",
+      "rule": {
+        "id": "5763",
+        "level": 10,
+        "description": "Multiple SSH authentication failures",
+        "groups": [
+          "syslog",
+          "sshd",
+          "authentication_failed"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "linux-server-01",
+        "ip": "192.168.1.20"
+      },
+      "manager": {
+        "name": "wazuh-manager"
+      },
+      "decoder": {
+        "name": "sshd"
+      },
+      "data": {
+        "srcip": "203.0.113.50",
+        "srcuser": "root"
+      },
+      "location": "/var/log/auth.log",
+      "full_log": "Failed password for root from 203.0.113.50 port 51234 ssh2"
+    },
+    "program": "/var/ossec/active-response/bin/custom-ar"
+  }
+}

@@ -209,9 +209,7 @@ func main() {
 		exitError("output encoding error", err)
 	}
 
-	fmt.Println(result.Extracted["source_ip"])
-	fmt.Println("6767676767676767676767676767676767676767676767")
+	//fmt.Println(result.Extracted["source_ip"])
 	fmt.Println(string(output))
-	fmt.Println("6767676767676767676767676767676767676767676767")
 
 }
