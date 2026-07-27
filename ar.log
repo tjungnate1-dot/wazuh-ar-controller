@@ -106,3 +106,29 @@
 2026/07/21 02:53:31 action=json_decode result=success
 2026/07/21 02:53:31 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
 2026/07/21 02:53:31 action=block result=failed source_ip="203.0.113.50" rule_id="5763" backend="ipset" error="ipset add failed: exit status 1; output=\"ipset v7.22: Kernel error received: Operation not permitted\""
+2026/07/27 01:43:46 action=start result=success message="active response controller started"
+2026/07/27 01:43:47 action=json_decode result=failed error="invalid character 'l' looking for beginning of value"
+2026/07/27 01:46:56 action=start result=success message="active response controller started"
+2026/07/27 01:46:57 action=json_decode result=failed error="invalid character 's' looking for beginning of value"
+2026/07/27 01:49:27 action=start result=success message="active response controller started"
+2026/07/27 01:49:27 action=json_decode result=success
+2026/07/27 01:49:27 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
+2026/07/27 01:49:27 action=block result=skipped source_ip="203.0.113.50" rule_id="5763" backend="mock" reason="IP already blocked"
+2026/07/27 02:08:53 action=start result=success message="active response controller started"
+2026/07/27 02:08:54 action=json_decode result=failed error="invalid character 's' looking for beginning of value"
+2026/07/27 02:10:22 action=start result=success message="active response controller started"
+2026/07/27 02:10:22 action=json_decode result=success
+2026/07/27 02:10:22 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
+2026/07/27 02:10:22 action=block result=skipped source_ip="203.0.113.50" rule_id="5763" backend="mock" reason="IP already blocked"
+2026/07/27 02:14:55 action=start result=success message="active response controller started"
+2026/07/27 02:14:55 action=json_decode result=success
+2026/07/27 02:14:55 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
+2026/07/27 02:14:55 action=block result=skipped source_ip="203.0.113.50" rule_id="5763" backend="mock" reason="IP already blocked"
+2026/07/27 02:15:08 action=start result=success message="active response controller started"
+2026/07/27 02:15:08 action=json_decode result=success
+2026/07/27 02:15:08 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
+2026/07/27 02:15:08 action=block result=skipped source_ip="203.0.113.50" rule_id="5763" backend="mock" reason="IP already blocked"
+2026/07/27 02:15:43 action=start result=success message="active response controller started"
+2026/07/27 02:15:43 action=json_decode result=success
+2026/07/27 02:15:43 action=field_extract result=success command="add" source_ip="203.0.113.50" rule_id="5763"
+2026/07/27 02:15:43 action=block result=skipped source_ip="203.0.113.50" rule_id="5763" backend="mock" reason="IP already blocked"
