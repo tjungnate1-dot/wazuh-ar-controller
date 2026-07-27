@@ -10,10 +10,10 @@ import (
 )
 
 //where file is stored
-const outputFilePath = "/Users/nate/ARC/wazuh-ar/test-stdin.json"
+const outputFilePath = "./test-stdin.json"
 
 func main() {
-	// 1. Read stdin
+	//1. Read stdin
 	rawInput, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading stdin: %v\n", err)
@@ -25,14 +25,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 2. Validate JSON structure and format with 2-space indentation
+	//2. check JSON structure and format
 	var formattedJSON bytes.Buffer
 	if err := json.Indent(&formattedJSON, rawInput, "", "  "); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: Invalid JSON input: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: Wrong JSON input: %v\n", err)
 		os.Exit(1)
 	}
 
-	// 3. Ensure the target directory exists before writing
+	//3. make sure the directory exists
 	outputDir := filepath.Dir(outputFilePath)
 	if outputDir != "." && outputDir != "" {
 		if err := os.MkdirAll(outputDir, 0755); err != nil {
@@ -41,8 +41,8 @@ func main() {
 		}
 	}
 
-	// 4. Write the formatted JSON payload to disk
-	// Permissions set to 0644 (read/write for owner, read-only for others)
+	//4. write the json file
+	// permission set to 0644 (read/write for owner, read only for others)
 	err = os.WriteFile(outputFilePath, formattedJSON.Bytes(), 0644)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "File I/O error writing to %s: %v\n", outputFilePath, err)

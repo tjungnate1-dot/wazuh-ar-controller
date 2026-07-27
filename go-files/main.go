@@ -10,7 +10,7 @@ import (
 const killSwitchPath = ".killswitch"
 
 func main() {
-	configPath := flag.String("config", "/Users/nate/ARC/wazuh-ar/config.yaml", "path to the YAML decoder configuration")
+	configPath := flag.String("config", "../config.yaml", "path to the YAML decoder configuration")
 	jsonPath := flag.String("input", "", "path to a JSON file; when omitted, JSON is read from stdin")
 	flag.Parse()
 
