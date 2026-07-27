@@ -10,10 +10,10 @@ import (
 )
 
 //where file is stored
-const outputFilePath = "/Users/nate/ARC/wazuh-ar/testing/test-stdin.json"
+const outputFilePath = "/Users/nate/ARC/wazuh-ar/test-stdin.json"
 
 func main() {
-	// 1. Read standard input (stdin) sent by wazuh-execd
+	// 1. Read stdin
 	rawInput, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading stdin: %v\n", err)
