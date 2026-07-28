@@ -10,7 +10,7 @@ import (
 const killSwitchPath = ".killswitch"
 
 func main() {
-	configPath := flag.String("config", "../config.yaml", "path to the YAML decoder configuration")
+	configPath := flag.String("config", "./config.yaml", "path to the YAML decoder configuration")
 	jsonPath := flag.String("input", "", "path to a JSON file; when omitted, JSON is read from stdin")
 	flag.Parse()
 
@@ -79,23 +79,23 @@ func main() {
 		logger.Printf("action=command_extract result=failed error=%q", err.Error())
 		exitError("command error", err)
 	}
-
+/*
 	ruleID, err := getStringField(result.Extracted, "rule_id")
 	if err != nil {
 		logger.Printf("action=rule_id_extract result=failed error=%q", err.Error())
 		exitError("rule ID error", err)
-	}
+	} */
 	//log them
 	logger.Printf(
-		"action=field_extract result=success command=%q source_ip=%q rule_id=%q",
+		"action=field_extract result=success command=%q source_ip=%q",// rule_id=%q",
 		command,
 		sourceIP,
-		ruleID,
+		//ruleID,
 	)
 
 	switch command {
 	case "add":
-		// Before blocking, check whether the IP is trusted.
+		// before blocking check if the IP is on whitelist
 		whitelisted, matchedEntry, err := isWhitelisted(
 			sourceIP,
 			cfg.Whitelist,
@@ -111,10 +111,10 @@ func main() {
 		}
 
 		if whitelisted {
-			logger.Printf(
-				"action=block result=skipped source_ip=%q rule_id=%q reason=%q whitelist_entry=%q",
+			logger.Printf(//                              v rule_id=%q
+				"action=block result=skipped source_ip=%q  reason=%q whitelist_entry=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				"source IP is whitelisted",
 				matchedEntry,
 			)
@@ -124,10 +124,10 @@ func main() {
 
 		result, err := blockIP(sourceIP, cfg)
 		if err != nil {
-			logger.Printf(
-				"action=block result=failed source_ip=%q rule_id=%q backend=%q error=%q",
+			logger.Printf(                         //   v rule_id=%q
+				"action=block result=failed source_ip=%q backend=%q error=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 				err.Error(),
 			)
@@ -137,18 +137,18 @@ func main() {
 
 		switch result {
 		case "added":
-			logger.Printf(
-				"action=block result=success source_ip=%q rule_id=%q backend=%q",
+			logger.Printf(                         //    v rule_id=%q
+				"action=block result=success source_ip=%q backend=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 			)
 
 		case "already_blocked":
-			logger.Printf(
-				"action=block result=skipped source_ip=%q rule_id=%q backend=%q reason=%q",
+			logger.Printf(                          //   v rule_id=%q
+				"action=block result=skipped source_ip=%q backend=%q reason=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 				"IP already blocked",
 			)
@@ -157,10 +157,10 @@ func main() {
 	case "delete":
 		result, err := flushIP(sourceIP, cfg)
 		if err != nil {
-			logger.Printf(
-				"action=unblock result=failed source_ip=%q rule_id=%q backend=%q error=%q",
+			logger.Printf(                         //     v rule_id=%q
+				"action=unblock result=failed source_ip=%q backend=%q error=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 				err.Error(),
 			)
@@ -170,18 +170,18 @@ func main() {
 
 		switch result {
 		case "deleted":
-			logger.Printf(
-				"action=unblock result=success source_ip=%q rule_id=%q backend=%q",
+			logger.Printf(                         //      v rule_id=%q
+				"action=unblock result=success source_ip=%q backend=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 			)
 
 		case "not_found":
-			logger.Printf(
-				"action=unblock result=skipped source_ip=%q rule_id=%q backend=%q reason=%q",
+			logger.Printf(                            //   v rule_id=%q
+				"action=unblock result=skipped source_ip=%q backend=%q reason=%q",
 				sourceIP,
-				ruleID,
+		//		ruleID,
 				cfg.BlockMethod,
 				"IP was not blocked",
 			)
@@ -211,5 +211,5 @@ func main() {
 
 	//fmt.Println(result.Extracted["source_ip"])
 	fmt.Println(string(output))
-
+	
 }

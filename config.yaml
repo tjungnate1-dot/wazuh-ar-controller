@@ -27,12 +27,12 @@ whitelist:
 fields:
   command: command
   source_ip: parameters.alert.data.srcip
-  rule_id: parameters.alert.rule.id
+  #rule_id: parameters.alert.rule.id
 
 required:
   - command
   - source_ip
-  - rule_id
+ # - rule_id
 
 validate_ip:
   - source_ip
