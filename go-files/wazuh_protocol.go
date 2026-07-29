@@ -25,7 +25,7 @@ type CheckKeyMessage struct{
 }
 
 type ManagerResponse struct {
-	Version int `json:"command"`
+	Version int `json:"version"`
 
 	Command string `json:"command"`
 }

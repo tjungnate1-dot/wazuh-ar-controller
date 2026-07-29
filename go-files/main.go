@@ -97,7 +97,6 @@ func main() {
 		if err != nil {
 			logger.Printf("action=check_keys result=failed source_ip=%q rule_id=%q error=%q",
 				sourceIP, ruleID, err.Error(),)
-
 			exitError("check_keys error", err)
 		}
 

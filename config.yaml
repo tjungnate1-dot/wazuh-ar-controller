@@ -5,7 +5,7 @@ enabled: true
 log_path: ./ar.log
 
 # CHANGE ON LINUX
-block_method: mock
+block_method: ipset
 
 # FOR LINUX
 ipset:
