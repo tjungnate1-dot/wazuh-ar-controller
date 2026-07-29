@@ -9,12 +9,7 @@ import (
 
 // blockIP adds an IP to the configured ipset.
 func blockIP(ip string, cfg *Config) (string, error) {
-	return blockIPSet(ip, cfg.IPSet.SetName)
-}
-
-// blockIPSet adds an IP to the Linux ipset.
-func blockIPSet(ip string, setName string) (string, error) {
-	exists, err := ipSetContains(setName, ip)
+	exists, err := ipSetContains(cfg.IPSet.SetName, ip)
 	if err != nil {
 		return "", err
 	}
@@ -23,12 +18,10 @@ func blockIPSet(ip string, setName string) (string, error) {
 		return "already_blocked", nil
 	}
 
-	// Do not use "sh -c".
-	// Passing each argument separately avoids shell injection.
 	cmd := exec.Command(
 		"ipset",
 		"add",
-		setName,
+		cfg.IPSet.SetName,
 		ip,
 	)
 
@@ -44,11 +37,7 @@ func blockIPSet(ip string, setName string) (string, error) {
 	return "added", nil
 }
 
-// ipSetContains checks whether an IP exists in the ipset.
-//
-// ipset test normally returns:
-// exit code 0: IP exists
-// exit code 1: IP does not exist
+
 func ipSetContains(setName string, ip string) (bool, error) {
 	cmd := exec.Command(
 		"ipset",

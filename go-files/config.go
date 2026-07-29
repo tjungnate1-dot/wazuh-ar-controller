@@ -39,7 +39,7 @@ func loadConfig(path string) (*Config, error) {
 	if err := decoder.Decode(&cfg); err != nil {
 		return nil, fmt.Errorf("parse YAML: %w", err)
 	}
-
+//go through all the settings in config.yaml, and check for errors
 	if strings.TrimSpace(cfg.LogPath) == "" {
 		return nil, errors.New("log_path cannot be empty")
 	}
@@ -53,14 +53,13 @@ func loadConfig(path string) (*Config, error) {
 		return nil, errors.New("ipset.set_name is required")
 	}
 
-	// Reject the configuration if any whitelist entry is malformed.
 	if err := validateWhitelist(cfg.Whitelist); err != nil {
 		return nil, fmt.Errorf(
 			"validate whitelist: %w",
 			err,
 		)
 	}
-//go through all the values in fields, required, and validate_IP
+
 	for name, path := range cfg.Fields {
 		if strings.TrimSpace(name) == "" {
 			return nil, errors.New("field names cannot be empty")

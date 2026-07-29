@@ -14,7 +14,7 @@ func main() {
 
 	flag.Parse()
 
-	// 1. check killswitch
+// 1. check killswitch
 	killSwitchActive, err := isKillSwitchActive(killSwitchPath)
 	if err != nil {
 		exitError("kill-switch error", err)
@@ -24,13 +24,13 @@ func main() {
 		return
 	}
 
-	// 2. load and validate config.yaml
+// 2. load and validate config.yaml
 	cfg, err := loadConfig(*configPath)
 	if err != nil {
 		exitError("configuration error", err)
 	}
 
-	// 3. setup logging
+// 3. setup logging
 	logger, logFile, err := createLogger(cfg.LogPath)
 	if err != nil {
 		exitError("logging error", err)
@@ -39,17 +39,17 @@ func main() {
 
 	logger.Printf("action=start result=success message=%q", "active response controller started")
 
-	// 4. return if disabled
+// 4. return if disabled
 	if !cfg.Enabled {
 		logger.Printf("action=controller_check result=skipped reason=%q", "controller disabled in configuration")
 		return
 	}
 
-	// 5. stdin stdout buffers
+// 5. stdin stdout buffers
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
 
-	// 6. decode JSON
+// 6. decode JSON
 	var document map[string]any
 	if err := readJSONLine(reader, &document); err != nil {
 		logger.Printf("action=stdin_read result=failed error=%q", err.Error())
@@ -58,14 +58,14 @@ func main() {
 	}
 	logger.Printf("action=stdin_read result=success")
 
-	// 7. extract and check fields
+// 7.extract and check fields
 	result, err := extractFields(document, cfg)
 	if err != nil {
 		logger.Printf("action=field_extract result=failed error=%q", err.Error())
 		exitError("field extraction error", err)
 	}
 
-	// 8. get source_ip, command, and rule_id
+// 8. get source_ip, command, and rule_id
 	sourceIP, err := getStringField(result.Extracted, "source_ip")
 	if err != nil {
 		logger.Printf("action=source_ip_extract result=failed error=%q", err.Error())
@@ -89,10 +89,10 @@ func main() {
 		"action=field_extract result=success command=%q source_ip=%q, rule_id=%q",
 		command, sourceIP, ruleID,
 	)
-	// 9. handle commands
+// 9. handle commands
 	switch command {
 	case "add":
-
+	    //if command is add
 		shouldContinue, err := requestWazuhKeyCheck(reader, writer, sourceIP,)
 		if err != nil {
 			logger.Printf("action=check_keys result=failed source_ip=%q rule_id=%q error=%q",
@@ -162,7 +162,7 @@ func main() {
 
 
 	case "delete":
-		//sent by wazuh after timeout, doesn't need a check_keys
+		//sent by wazuh after timeout,so doesn't need a check_keys
 		flushResult, err := flushIP(sourceIP, cfg)
 		if err != nil {
 			logger.Printf(
@@ -199,6 +199,7 @@ func main() {
 		}
 
 	default:
+		//if command isn't add or delete
 		err := fmt.Errorf(
 			"unsupported command %q",
 			command,
@@ -211,10 +212,10 @@ func main() {
 		exitError("command error", err)
 	}
 
-	// 10. end
+// 10. Log and stop
 	logger.Printf("action=finish result=success command=%q source_ip=%q rule_id=%q", 
 		command, sourceIP, ruleID,)
-		
+
 	/* 9. output results
 	output, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
@@ -224,4 +225,4 @@ func main() {
 	//fmt.Println(result.Extracted["source_ip"])
 	fmt.Println(string(output))
 	*/
-}
+} 
