@@ -125,7 +125,7 @@ func main() {
 		if whitelisted {
 			logger.Printf(
 				"action=block result=skipped source_ip=%q reason=%q whitelist_entry=%q",
-				sourceIP,/* ruleID,*/ "source IP is whitelisted", matchedEntry,
+				sourceIP, ruleID, "source IP is whitelisted", matchedEntry,
 			)
 
 			return
@@ -215,6 +215,7 @@ func main() {
 	// 10. end
 	logger.Printf("action=finish result=success command=%q source_ip=%q rule_id=%q", 
 		command, sourceIP, ruleID,)
+		
 	/* 9. output results
 	output, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
