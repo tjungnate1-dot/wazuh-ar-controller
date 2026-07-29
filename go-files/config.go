@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
 	Enabled       bool              `yaml:"enabled"`
 	LogPath       string            `yaml:"log_path"`
-	BlockMethod string `yaml:"block_method"`
-	IPSet IPSetConfig `yaml:"ipset"`
-	Mock MockConfig `yaml:"mock"`
-	Whitelist []string `yaml:"whitelist"`
+	BlockMethod   string            `yaml:"block_method"`
+	IPSet         IPSetConfig       `yaml:"ipset"`
+	Whitelist     []string          `yaml:"whitelist"`
 	Fields        map[string]string `yaml:"fields"`
 	Required      []string          `yaml:"required"`
 	ValidateIP    []string          `yaml:"validate_ip"`
@@ -25,12 +23,6 @@ type Config struct {
 // IPSetConfig contains settings used by the Linux ipset backend.
 type IPSetConfig struct {
 	SetName string `yaml:"set_name"`
-}
-
-// MockConfig contains settings used by the development backend.
-type MockConfig struct {
-	// StatePath stores the simulated blocked IP list.
-	StatePath string `yaml:"state_path"`
 }
 
 // loadConfig reads config.yaml, decodes it, and validates settings.
@@ -55,29 +47,10 @@ func loadConfig(path string) (*Config, error) {
 	if len(cfg.Fields) == 0 {
 		return nil, errors.New("fields cannot be empty")
 	}
-	// Validate the selected response backend.
-	switch cfg.BlockMethod {
-	case "mock":
-		// The mock backend needs somewhere to persist its state.
-		if strings.TrimSpace(cfg.Mock.StatePath) == "" {
-			return nil, fmt.Errorf(
-				"mock.state_path is required when block_method is mock",
-			)
-		}
 
-	case "ipset":
-		// The real Linux backend needs an ipset name.
-		if strings.TrimSpace(cfg.IPSet.SetName) == "" {
-			return nil, fmt.Errorf(
-				"ipset.set_name is required when block_method is ipset",
-			)
-		}
-
-	default:
-		return nil, fmt.Errorf(
-			"unsupported block_method %q; expected mock or ipset",
-			cfg.BlockMethod,
-		)
+	// Validate the ipset configuration.
+	if strings.TrimSpace(cfg.IPSet.SetName) == "" {
+		return nil, errors.New("ipset.set_name is required")
 	}
 
 	// Reject the configuration if any whitelist entry is malformed.
@@ -87,6 +60,7 @@ func loadConfig(path string) (*Config, error) {
 			err,
 		)
 	}
+
 	for name, path := range cfg.Fields {
 		if strings.TrimSpace(name) == "" {
 			return nil, errors.New("field names cannot be empty")
