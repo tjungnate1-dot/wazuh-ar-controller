@@ -1,0 +1,1 @@
+{"version":1,"origin":{"name":"wazuh-manager","module":"wazuh-execd"},"command":"twerk","parameters":{"alert":{"rule":{"id":"5763"},"data":{"srcip":"203.0.113.50"}}}}
