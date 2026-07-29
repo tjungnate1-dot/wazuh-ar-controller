@@ -60,7 +60,7 @@ func loadConfig(path string) (*Config, error) {
 			err,
 		)
 	}
-
+//go through all the values in fields, required, and validate_IP
 	for name, path := range cfg.Fields {
 		if strings.TrimSpace(name) == "" {
 			return nil, errors.New("field names cannot be empty")

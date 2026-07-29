@@ -8,12 +8,7 @@ import (
 
 // flushIP removes one IP from the configured ipset.
 func flushIP(ip string, cfg *Config) (string, error) {
-	return flushIPSet(ip, cfg.IPSet.SetName)
-}
-
-// flushIPSet removes one IP from a real Linux ipset.
-func flushIPSet(ip string, setName string) (string, error) {
-	exists, err := ipSetContains(setName, ip)
+	exists, err := ipSetContains(cfg.IPSet.SetName, ip)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +20,7 @@ func flushIPSet(ip string, setName string) (string, error) {
 	cmd := exec.Command(
 		"ipset",
 		"del",
-		setName,
+		cfg.IPSet.SetName,
 		ip,
 	)
 
