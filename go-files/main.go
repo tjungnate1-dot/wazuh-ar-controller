@@ -10,7 +10,7 @@ import (
 const killSwitchPath = ".killswitch"
 
 func main() {
-	configPath := flag.String("config", "./config.yaml", "path to the YAML decoder configuration")
+	configPath := flag.String("config", "/var/ossec/active-response/etc/custom-ar.yaml", "path to the YAML decoder configuration")
 
 	flag.Parse()
 

@@ -36,10 +36,7 @@ func readJSONLine(reader *bufio.Reader, target any, ) error {
 
 	if err != nil {
 		if err != io.EOF || len(bytes.TrimSpace(rawMessage)) == 0 {
-			return fmt.Errorf(
-				"read JSON message: %w", 
-				err, 
-			)
+			return fmt.Errorf("read JSON message: %w", err, )
 		}
 	}
 

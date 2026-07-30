@@ -9,6 +9,7 @@ import (
 
 // blockIP adds an IP to the configured ipset.
 func blockIP(ip string, cfg *Config) (string, error) {
+	//validate
 	exists, err := ipSetContains(cfg.IPSet.SetName, ip)
 	if err != nil {
 		return "", err
@@ -18,20 +19,11 @@ func blockIP(ip string, cfg *Config) (string, error) {
 		return "already_blocked", nil
 	}
 
-	cmd := exec.Command(
-		"ipset",
-		"add",
-		cfg.IPSet.SetName,
-		ip,
-	)
+	cmd := exec.Command("ipset", "add", cfg.IPSet.SetName, ip, )
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf(
-			"ipset add failed: %w; output=%q",
-			err,
-			strings.TrimSpace(string(output)),
-		)
+		return "", fmt.Errorf("ipset add failed: %w; output=%q", err, strings.TrimSpace(string(output)), )
 	}
 
 	return "added", nil
@@ -39,13 +31,8 @@ func blockIP(ip string, cfg *Config) (string, error) {
 
 
 func ipSetContains(setName string, ip string) (bool, error) {
-	cmd := exec.Command(
-		"ipset",
-		"test",
-		setName,
-		ip,
-	)
-
+	//runs this command
+	cmd := exec.Command("ipset", "test", setName, ip, )
 	output, err := cmd.CombinedOutput()
 
 	if err == nil {
@@ -57,9 +44,6 @@ func ipSetContains(setName string, ip string) (bool, error) {
 		return false, nil
 	}
 
-	return false, fmt.Errorf(
-		"ipset test failed: %w; output=%q",
-		err,
-		strings.TrimSpace(string(output)),
-	)
+	return false, fmt.Errorf("ipset test failed: %w; output=%q",
+	 err, strings.TrimSpace(string(output)), )
 }

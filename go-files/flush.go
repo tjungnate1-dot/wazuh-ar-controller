@@ -17,20 +17,11 @@ func flushIP(ip string, cfg *Config) (string, error) {
 		return "not_found", nil
 	}
 
-	cmd := exec.Command(
-		"ipset",
-		"del",
-		cfg.IPSet.SetName,
-		ip,
-	)
+	cmd := exec.Command("ipset", "del", cfg.IPSet.SetName, ip, )
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf(
-			"ipset delete failed: %w; output=%q",
-			err,
-			strings.TrimSpace(string(output)),
-		)
+		return "", fmt.Errorf("ipset delete failed: %w; output=%q", err, strings.TrimSpace(string(output)), )
 	}
 
 	return "deleted", nil
