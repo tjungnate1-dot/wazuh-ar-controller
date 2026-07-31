@@ -2,7 +2,7 @@
 enabled: true
 
 # Where the program writes its logs.
-log_path: ./ar.log
+log_path: /var/ossec/logs/active-responses.log
 
 block_method: ipset
 

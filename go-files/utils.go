@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// exitError stop code execution with exit code 1
+// exitError stop code execution and returns 1
 func exitError(category string, err error) {
 	fmt.Fprintf(os.Stderr, "%s: %v\n", category, err)
 	os.Exit(1)
@@ -55,7 +55,7 @@ func createLogger(path string) (*log.Logger, *os.File, error) {
 	logger := log.New(
 		logFile,
 		"",
-		log.Ldate|log.Ltime|log.LUTC,
+		log.Ldate|log.Ltime,
 	)
 
 	return logger, logFile, nil
