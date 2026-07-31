@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const killSwitchPath = ".killswitch"
+const killSwitchPath = "/var/ossec/active-response/etc/.killswitch"
 
 func main() {
 	configPath := flag.String("config", "/var/ossec/active-response/etc/custom-ar.yaml", "path to the YAML decoder configuration")
@@ -107,14 +107,14 @@ func main() {
 			return
 		}
 
-		logger.Printf("action=check_keys result=continue source_ip=%q",
+		logger.Printf("action=check_keys result=continue source_ip=%q rule_id=%q", 
 			sourceIP, ruleID,)
 
 		// before blocking check if the IP is on whitelist
 		whitelisted, matchedEntry, err := isWhitelisted(sourceIP, cfg.Whitelist,)
 		if err != nil {
 			logger.Printf(
-				"action=whitelist_check result=failed source_ip=%q error=%q",
+				"action=whitelist_check result=failed source_ip=%q rule_id=%q error=%q",
 				sourceIP,ruleID, err.Error(),
 			)
 
@@ -123,7 +123,7 @@ func main() {
 
 		if whitelisted {
 			logger.Printf(
-				"action=block result=skipped source_ip=%q reason=%q whitelist_entry=%q",
+				"action=block result=skipped source_ip=%q rule_id=%q reason=%q whitelist_entry=%q",
 				sourceIP, ruleID, "source IP is whitelisted", matchedEntry,
 			)
 
@@ -133,9 +133,8 @@ func main() {
 		result, err := blockIP(sourceIP, cfg)
 		if err != nil {
 			logger.Printf(
-				"action=block result=failed source_ip=%q backend=%q error=%q",
-				sourceIP, ruleID, cfg.BlockMethod,
-				err.Error(),
+				"action=block result=failed source_ip=%q rule_id=%q backend=%q error=%q",
+				sourceIP, ruleID, cfg.BlockMethod, err.Error(),
 			)
 
 			exitError("block error", err)
@@ -144,18 +143,18 @@ func main() {
 		switch result {
 		case "added":
 			logger.Printf(
-				"action=block result=success source_ip=%q backend=%q",
+				"action=block result=success source_ip=%q rule_id=%q backend=%q",
 				sourceIP, ruleID, cfg.BlockMethod,)
 
 		case "already_blocked":
 			logger.Printf(
-				"action=block result=skipped source_ip=%q backend=%q reason=%q",
+				"action=block result=skipped source_ip=%q rule_id=%q backend=%q reason=%q",
 				sourceIP, ruleID, cfg.BlockMethod, "IP already blocked",)
 
 		default:
 			err := fmt.Errorf("unexpected block result %q", result, )
 			logger.Printf(
-				"action=block result=failed source_ip=%q error=%q", 
+				"action=block result=failed source_ip=%q rule_id=%q error=%q", 
 				sourceIP, ruleID, err.Error(),)
 			exitError("block result error", err)
 		}

@@ -8,7 +8,6 @@ import (
 	"io"
 )
 
-
 type CheckKeyMessage struct{
 	Version int `json:"version"`
 
@@ -29,7 +28,6 @@ type ManagerResponse struct {
 
 	Command string `json:"command"`
 }
-
 
 func readJSONLine(reader *bufio.Reader, target any, ) error {
 	rawMessage, err := reader.ReadBytes('\n')
