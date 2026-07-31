@@ -130,7 +130,7 @@ func main() {
 			return
 		}
 
-		result, err := blockIP(sourceIP, cfg)
+		result, err := blockIP(sourceIP)
 		if err != nil {
 			logger.Printf(
 				"action=block result=failed source_ip=%q rule_id=%q backend=%q error=%q",
@@ -162,7 +162,7 @@ func main() {
 
 	case "delete":
 		//sent by wazuh after timeout,so doesn't need a check_keys
-		flushResult, err := flushIP(sourceIP, cfg)
+		flushResult, err := flushIP(sourceIP)
 		if err != nil {
 			logger.Printf(
 				"action=unblock result=failed source_ip=%q rule_id=%q backend=%q error=%q",
