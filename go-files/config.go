@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
@@ -39,7 +39,7 @@ func loadConfig(path string) (*Config, error) {
 	if err := decoder.Decode(&cfg); err != nil {
 		return nil, fmt.Errorf("parse YAML: %w", err)
 	}
-//go through all the settings in config.yaml, and check for errors
+	//go through all the settings in config.yaml, and check for errors
 	if strings.TrimSpace(cfg.LogPath) == "" {
 		return nil, errors.New("log_path cannot be empty")
 	}

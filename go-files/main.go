@@ -14,7 +14,7 @@ func main() {
 
 	flag.Parse()
 
-// 1. check killswitch
+	// 1. check killswitch
 	killSwitchActive, err := isKillSwitchActive(killSwitchPath)
 	if err != nil {
 		exitError("kill-switch error", err)
@@ -24,13 +24,13 @@ func main() {
 		return
 	}
 
-// 2. load and validate config.yaml
+	// 2. load and validate config.yaml
 	cfg, err := loadConfig(*configPath)
 	if err != nil {
 		exitError("configuration error", err)
 	}
 
-// 3. setup logging
+	// 3. setup logging
 	logger, logFile, err := createLogger(cfg.LogPath)
 	if err != nil {
 		exitError("logging error", err)
@@ -39,17 +39,17 @@ func main() {
 
 	logger.Printf("action=start result=success message=%q", "active response controller started")
 
-// 4. return if disabled
+	// 4. return if disabled
 	if !cfg.Enabled {
 		logger.Printf("action=controller_check result=skipped reason=%q", "controller disabled in configuration")
 		return
 	}
 
-// 5. stdin stdout buffers
+	// 5. stdin stdout buffers
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
 
-// 6. decode JSON
+	// 6. decode JSON
 	var document map[string]any
 	if err := readJSONLine(reader, &document); err != nil {
 		logger.Printf("action=stdin_read result=failed error=%q", err.Error())
@@ -58,14 +58,14 @@ func main() {
 	}
 	logger.Printf("action=stdin_read result=success")
 
-// 7.extract and check fields
+	// 7.extract and check fields
 	result, err := extractFields(document, cfg)
 	if err != nil {
 		logger.Printf("action=field_extract result=failed error=%q", err.Error())
 		exitError("field extraction error", err)
 	}
 
-// 8. get source_ip, command, and rule_id
+	// 8. get source_ip, command, and rule_id
 	sourceIP, err := getStringField(result.Extracted, "source_ip")
 	if err != nil {
 		logger.Printf("action=source_ip_extract result=failed error=%q", err.Error())
@@ -82,40 +82,40 @@ func main() {
 	if err != nil {
 		logger.Printf("action=rule_id_extract result=failed error=%q", err.Error())
 		exitError("rule ID error", err)
-	} 
+	}
 
 	//log them
 	logger.Printf(
 		"action=field_extract result=success command=%q source_ip=%q, rule_id=%q",
 		command, sourceIP, ruleID,
 	)
-// 9. handle commands
+	// 9. handle commands
 	switch command {
 	case "add":
-	    //if command is add
-		shouldContinue, err := requestWazuhKeyCheck(reader, writer, sourceIP,)
+		//if command is add
+		shouldContinue, err := requestWazuhKeyCheck(reader, writer, sourceIP)
 		if err != nil {
 			logger.Printf("action=check_keys result=failed source_ip=%q rule_id=%q error=%q",
-				sourceIP, ruleID, err.Error(),)
+				sourceIP, ruleID, err.Error())
 			exitError("check_keys error", err)
 		}
 
 		if !shouldContinue {
 			logger.Printf("action=check_keys result=abort source_ip=%q rule_id=%q reason=%q",
-				sourceIP, ruleID, "Wazuh reported an equivalent response is already active", )
+				sourceIP, ruleID, "Wazuh reported an equivalent response is already active")
 
 			return
 		}
 
-		logger.Printf("action=check_keys result=continue source_ip=%q rule_id=%q", 
-			sourceIP, ruleID,)
+		logger.Printf("action=check_keys result=continue source_ip=%q rule_id=%q",
+			sourceIP, ruleID)
 
 		// before blocking check if the IP is on whitelist
-		whitelisted, matchedEntry, err := isWhitelisted(sourceIP, cfg.Whitelist,)
+		whitelisted, matchedEntry, err := isWhitelisted(sourceIP, cfg.Whitelist)
 		if err != nil {
 			logger.Printf(
 				"action=whitelist_check result=failed source_ip=%q rule_id=%q error=%q",
-				sourceIP,ruleID, err.Error(),
+				sourceIP, ruleID, err.Error(),
 			)
 
 			exitError("whitelist error", err)
@@ -144,21 +144,20 @@ func main() {
 		case "added":
 			logger.Printf(
 				"action=block result=success source_ip=%q rule_id=%q backend=%q",
-				sourceIP, ruleID, cfg.BlockMethod,)
+				sourceIP, ruleID, cfg.BlockMethod)
 
 		case "already_blocked":
 			logger.Printf(
 				"action=block result=skipped source_ip=%q rule_id=%q backend=%q reason=%q",
-				sourceIP, ruleID, cfg.BlockMethod, "IP already blocked",)
+				sourceIP, ruleID, cfg.BlockMethod, "IP already blocked")
 
 		default:
-			err := fmt.Errorf("unexpected block result %q", result, )
+			err := fmt.Errorf("unexpected block result %q", result)
 			logger.Printf(
-				"action=block result=failed source_ip=%q rule_id=%q error=%q", 
-				sourceIP, ruleID, err.Error(),)
+				"action=block result=failed source_ip=%q rule_id=%q error=%q",
+				sourceIP, ruleID, err.Error())
 			exitError("block result error", err)
 		}
-
 
 	case "delete":
 		//sent by wazuh after timeout,so doesn't need a check_keys
@@ -206,14 +205,14 @@ func main() {
 
 		logger.Printf(
 			"action=command_check result=failed command=%q source_ip=%q error=%q",
-			command, sourceIP, err.Error(),)
+			command, sourceIP, err.Error())
 
 		exitError("command error", err)
 	}
 
-// 10. Log and stop
-	logger.Printf("action=finish result=success command=%q source_ip=%q rule_id=%q", 
-		command, sourceIP, ruleID,)
+	// 10. Log and stop
+	logger.Printf("action=finish result=success command=%q source_ip=%q rule_id=%q",
+		command, sourceIP, ruleID)
 
 	/* 9. output results
 	output, err := json.MarshalIndent(result, "", "  ")
@@ -224,4 +223,4 @@ func main() {
 	//fmt.Println(result.Extracted["source_ip"])
 	fmt.Println(string(output))
 	*/
-} 
+}

@@ -9,19 +9,15 @@ import (
 // flushIP removes one IP from the configured ipset.
 func flushIP(ip string) (string, error) {
 	exists, err := ipSetContains(ip)
-	if err != nil {
-		return "", err
-	}
-
-	if !exists {
-		return "not_found", nil
-	}
-
-	cmd := exec.Command("ipset", "del","wazuh-ar-blocklist", ip, )
+	cmd := exec.Command("ipset", "del", "wazuh-ar-blocklist", ip)
 
 	output, err := cmd.CombinedOutput()
+
+	if !exists {
+		return "not found", nil
+	}
 	if err != nil {
-		return "", fmt.Errorf("ipset delete failed: %w; output=%q", err, strings.TrimSpace(string(output)), )
+		return "", fmt.Errorf("ipset delete failed: %w; output=%q", err, strings.TrimSpace(string(output)))
 	}
 
 	return "deleted", nil
