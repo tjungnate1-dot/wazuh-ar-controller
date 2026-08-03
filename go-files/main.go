@@ -7,37 +7,37 @@ import (
 	"os"
 )
 
-const killSwitchPath = "/var/ossec/active-response/etc/.killswitch"
+const killSwitchPath = "/var/ossec/active-response/bin/.killswitch"
 
 func main() {
 	configPath := flag.String("config", "/var/ossec/active-response/etc/custom-ar.yaml", "path to the YAML decoder configuration")
 
 	flag.Parse()
 
-	// 1. check killswitch
-	killSwitchActive, err := isKillSwitchActive(killSwitchPath)
-	if err != nil {
-		exitError("kill-switch error", err)
-	}
-	if killSwitchActive {
-		fmt.Fprintf(os.Stderr, "kill switch active at %s, stopping immediately\n", killSwitchPath)
-		return
-	}
-
-	// 2. load and validate config.yaml
-	cfg, err := loadConfig(*configPath)
-	if err != nil {
-		exitError("configuration error", err)
-	}
-
-	// 3. setup logging
-	logger, logFile, err := createLogger(cfg.LogPath)
+	// 1. setup logging
+	logger, logFile, err := createLogger("/var/ossec/logs/active-responses.log")
 	if err != nil {
 		exitError("logging error", err)
 	}
 	defer logFile.Close()
 
 	logger.Printf("action=start result=success message=%q", "active response controller started")
+
+	// 2. check killswitch
+	killSwitchActive, err := isKillSwitchActive(killSwitchPath)
+	if err != nil {
+		exitError("kill-switch error", err)
+	}
+	if killSwitchActive {
+		logger.Printf("kill switch active at %s, stopping immediately", killSwitchPath)
+		return
+	}
+
+	// 3. load and validate config.yaml
+	cfg, err := loadConfig(*configPath)
+	if err != nil {
+		exitError("configuration error", err)
+	}
 
 	// 4. return if disabled
 	if !cfg.Enabled {
