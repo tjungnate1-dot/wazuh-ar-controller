@@ -1,1 +1,0 @@
-{"version":1,"origin":{"name":"wazuh-manager","module":"wazuh-execd"},"command":"add","parameters":{"alert":{"rule":{"id":"5763"},"data":{}}}}
