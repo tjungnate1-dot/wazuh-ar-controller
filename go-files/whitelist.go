@@ -9,11 +9,11 @@ import (
 // isWhitelisted checks whether the source IP matches any
 // exact IP or CIDR entry in the configured whitelist.
 
-func isWhitelisted(ipText string, whitelist []string,) (bool, string, error) {
+func isWhitelisted(ipText string, whitelist []string) (bool, string, error) {
 	// Parse and validate the source IP first.
-	sourceIP, err := netip.ParseAddr(strings.TrimSpace(ipText),)
+	sourceIP, err := netip.ParseAddr(strings.TrimSpace(ipText))
 	if err != nil {
-		return false, "", fmt.Errorf("invalid source IP %q: %w", ipText, err,)
+		return false, "", fmt.Errorf("invalid source IP %q: %w", ipText, err)
 	}
 
 	for _, rawEntry := range whitelist {
@@ -53,4 +53,39 @@ func isWhitelisted(ipText string, whitelist []string,) (bool, string, error) {
 	}
 
 	return false, "", nil
+}
+
+// validateWhitelist checks every whitelist entry during
+// configuration loading.
+//
+// This lets the program fail before processing an alert
+// if the whitelist configuration is wrong
+func validateWhitelist(entries []string) error {
+	for index, rawEntry := range entries {
+		entry := strings.TrimSpace(rawEntry)
+
+		if entry == "" {
+			return fmt.Errorf(
+				"whitelist entry %d is empty",
+				index,
+			)
+		}
+
+		// Valid exact IP.
+		if _, err := netip.ParseAddr(entry); err == nil {
+			continue
+		}
+
+		// Valid CIDR network.
+		if _, err := netip.ParsePrefix(entry); err == nil {
+			continue
+		}
+
+		return fmt.Errorf(
+			"whitelist entry %q is not a valid IP or CIDR",
+			entry,
+		)
+	}
+
+	return nil
 }

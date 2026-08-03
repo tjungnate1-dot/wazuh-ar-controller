@@ -8,14 +8,15 @@ import (
 )
 
 // blockIP adds an IP to the configured ipset.
-func blockIP(ip string) (string, error) {
+func blockIP(ip string, cfg *Config) (string, error) {
 	// make sure ipset and table exists
-	err := createFirewall()
+	set_name := cfg.IPSet.SetName
+	err := createFirewall(set_name)
 	if err != nil {
 		return "", err
 	}
 	// Check whether the IP is already present.
-	exists, err := ipSetContains(ip)
+	exists, err := ipSetContains(ip, set_name)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +26,7 @@ func blockIP(ip string) (string, error) {
 	}
 
 	// Add the IP to the set.
-	cmd := exec.Command("ipset", "add", "wazuh-ar-blocklist", ip, "-exist")
+	cmd := exec.Command("ipset", "add", set_name, ip, "-exist")
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -35,8 +36,8 @@ func blockIP(ip string) (string, error) {
 	return "added", nil
 }
 
-func checkIPSet() error {
-	cmd := exec.Command("ipset", "create", "wazuh-ar-blocklist", "hash:ip", "-exist")
+func checkIPSet(set_name string) error {
+	cmd := exec.Command("ipset", "create", set_name, "hash:ip", "-exist")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("failed to create ipset: %v; output=%q", err, output)
@@ -45,14 +46,14 @@ func checkIPSet() error {
 	return nil
 }
 
-func createFirewall() error {
-	if err := checkIPSet(); err != nil {
+func createFirewall(set_name string) error {
+	if err := checkIPSet(set_name); err != nil {
 		return err
 	}
 
 	check := exec.Command(
 		"iptables", "-C", "INPUT", "-m", "set", "--match-set",
-		"wazuh-ar-blocklist", "src", "-j", "DROP",
+		set_name, "src", "-j", "DROP",
 	)
 
 	if err := check.Run(); err == nil {
@@ -61,7 +62,7 @@ func createFirewall() error {
 
 	add := exec.Command(
 		"iptables", "-I", "INPUT", "1", "-m", "set",
-		"--match-set", "wazuh-ar-blocklist", "src", "-j", "DROP",
+		"--match-set", set_name, "src", "-j", "DROP",
 	)
 
 	output, err := add.CombinedOutput()
@@ -72,9 +73,9 @@ func createFirewall() error {
 	return nil
 }
 
-func ipSetContains(ip string) (bool, error) {
+func ipSetContains(ip string, set_name string) (bool, error) {
 	//runs this command
-	cmd := exec.Command("ipset", "test", "wazuh-ar-blocklist", ip)
+	cmd := exec.Command("ipset", "test", set_name, ip)
 	output, err := cmd.CombinedOutput()
 
 	if err == nil {

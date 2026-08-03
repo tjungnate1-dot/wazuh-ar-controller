@@ -7,9 +7,10 @@ import (
 )
 
 // flushIP removes one IP from the configured ipset.
-func flushIP(ip string) (string, error) {
-	exists, err := ipSetContains(ip)
-	cmd := exec.Command("ipset", "del", "wazuh-ar-blocklist", ip)
+func flushIP(ip string, cfg *Config) (string, error) {
+	set_name := cfg.IPSet.SetName
+	exists, err := ipSetContains(ip, set_name)
+	cmd := exec.Command("ipset", "del", set_name, ip)
 
 	output, err := cmd.CombinedOutput()
 
