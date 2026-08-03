@@ -1,3 +1,2 @@
-# wazuh-ar-controller
+# wazuh-ar-controllerW
 Internship project: Project Scope: Wazuh Active Response Controller (Go)
-Accessing from nates macbook and virtual machine
